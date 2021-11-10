@@ -1,4 +1,4 @@
-# XebiaLabs Blueprints
+# XebiaLabs Blueprints : Catalink's repository
 
 [![Travis Build Status][travis-image]][travis-url-main]
 
