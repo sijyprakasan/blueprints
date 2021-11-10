@@ -1,0 +1,7 @@
+apiVersion: xl/v1
+kind: Import
+metadata:
+  imports:
+  - xebialabs/xlr-security-scanning-configuration.yaml
+  - xebialabs/xlr-security-scanning-pipeline.yaml
+  - xebialabs/xlr-security-scanning-dashboard.yaml

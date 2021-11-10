@@ -1,0 +1,163 @@
+apiVersion: xl/v2
+kind: Blueprint
+
+metadata:
+  name: Security and Compliance Demo Application
+  description: |
+    This blueprint creates a simple template to orchestrate Security and Compliance with XL Release.
+  author: XebiaLabs
+  version: 2.0
+  instructions: Please read the generated file "xebialabs/USAGE-security-scanning.md" for further usage instructions.
+
+spec:
+  parameters:
+  - name: AppName
+    type: Input
+    prompt: What is the name of the Application?
+  - name: ConfigureSonar
+    type: Confirm
+    prompt: Do you want to configure SonarQube in your compliance pipeline?
+  - name: SonarUrl
+    type: Input
+    prompt: What is the URL for SonarQube, example https://sonarcloud.io?
+    promptIf: ConfigureSonar
+    default: https://sonarcloud.io
+  - name: ConfigureSonarUsername
+    type: Confirm
+    prompt: Do you want to enter an username for SonarQube?
+    promptIf: ConfigureSonar
+  - name: SonarUsername
+    type: Input
+    prompt: What is the username for SonarQube?
+    promptIf: ConfigureSonarUsername
+    saveInXlvals: true
+    default: ""
+  - name: ConfigureSonarPassword
+    type: Confirm
+    prompt: Do you want to enter a password for SonarQube?
+    promptIf: ConfigureSonar
+  - name: SonarPassword
+    type: SecretInput
+    prompt: What is the password for SonarQube?
+    promptIf: ConfigureSonarPassword
+    default: ""
+  - name: SonarResource
+    type: Input
+    prompt: What is the project key for SonarQube?
+    promptIf: ConfigureSonar
+  - name: ConfigureFortify
+    type: Confirm
+    prompt: Do you want to configure Fortify in your compliance pipeline?
+  - name: SelectedFortify
+    type: Select
+    prompt: "Select the Source Code Analysis Tool:"
+    promptIf: ConfigureFortify
+    default: Fortify SSC
+    options:
+    - Fortify SSC
+    - Fortify on Demand
+  - name: FortifyUrl
+    type: Input
+    prompt: What is the URL for Fortify, example https://api.emea.fortify.com?
+    promptIf: ConfigureFortify
+    default: https://api.emea.fortify.com
+  - name: FortifyUsername
+    type: Input
+    prompt: What is the username for Fortify?
+    promptIf: ConfigureFortify
+  - name: FortifyPassword
+    type: SecretInput
+    prompt: What is the password for Fortify?
+    promptIf: ConfigureFortify
+  - name: FortifyApplication
+    type: Input
+    prompt: What is the application name for Fortify?
+    promptIf: ConfigureFortify
+  - name: FortifyApplicationVersion
+    type: Input
+    prompt: What is the application version for Fortify?
+    promptIf: ConfigureFortify
+  - name: ConfigureCheckmarx
+    type: Confirm
+    prompt: Do you want to configure Checkmarx in your compliance pipeline?
+  - name: SelectedCheckmarx
+    type: Select
+    prompt: "Select the compliance you want to configure:"
+    promptIf: ConfigureCheckmarx
+    default: both
+    options:
+    - CxSAST
+    - CxOSA
+    - both
+  - name: CheckmarxUrl
+    type: Input
+    prompt: What is the URL for Checkmarx?
+    promptIf: ConfigureCheckmarx
+  - name: CheckmarxUsername
+    type: Input
+    prompt: What is the username for Checkmarx?
+    promptIf: ConfigureCheckmarx
+  - name: CheckmarxPassword
+    type: SecretInput
+    prompt: What is the password for Checkmarx?
+    promptIf: ConfigureCheckmarx
+  - name: CheckmarxApplication
+    type: Input
+    prompt: What is the project name for Checkmarx?
+    promptIf: ConfigureCheckmarx
+  - name: CheckmarxTeam
+    type: Input
+    prompt: What is the team name for Checkmarx?
+    promptIf: ConfigureCheckmarx
+  - name: ConfigureBlackduck
+    type: Confirm
+    prompt: Do you want to configure Black Duck in your compliance pipeline?
+  - name: BlackduckUrl
+    type: Input
+    prompt: What is the URL for Black Duck?
+    promptIf: ConfigureBlackduck
+  - name: BlackduckUsername
+    type: Input
+    prompt: What is the username for Black Duck?
+    promptIf: ConfigureBlackduck
+  - name: BlackduckPassword
+    type: SecretInput
+    prompt: What is the password for Black Duck?
+    promptIf: ConfigureBlackduck
+  - name: BlackduckApplication
+    type: Input
+    prompt: What is the application name for Black Duck?
+    promptIf: ConfigureBlackduck
+  - name: BlackduckApplicationVersion
+    type: Input
+    prompt: What is the application version for Black Duck?
+    promptIf: ConfigureBlackduck
+
+  - name: GenerateDockerComposeSetup
+    type: Confirm
+    prompt: "Do you want to generate a docker-compose setup with the required tools to run this blueprint?"
+    default: false
+
+  includeAfter:
+  - blueprint: xl-devops-platform
+    includeIf: GenerateDockerComposeSetup
+    parameterOverrides:
+    - name: UseXLDeploy
+      value: false
+    - name: UseXLRelease
+      value: true
+    - name: XLVersion
+      value: "9.0"
+    - name: UseDockerProxy
+      value: false
+    - name: UseJenkins
+      value: false
+
+  files:
+  # XebiaLabs
+  - path: xebialabs.yaml
+  - path: README.md
+  - path: xebialabs/USAGE-security-scanning.md.tmpl
+  - path: xebialabs/xlr-security-scanning-configuration.yaml.tmpl
+  - path: xebialabs/xlr-security-scanning-pipeline.yaml.tmpl
+  - path: xebialabs/xlr-security-scanning-dashboard.yaml.tmpl

@@ -1,0 +1,77 @@
+apiVersion: xl/v2
+kind: Blueprint
+
+metadata:
+  name: CL-Azure-App-Service
+  description: |
+    This blueprint provisions an Azure App service instance with given Docker image or with a sample application
+  author: XebiaLabs
+  version: 2.0
+  instructions: Please read the generated file "xebialabs/USAGE-app-service-docker-app.md" for further usage instructions.
+
+spec:
+  parameters:
+  - name: AppName
+    type: Input
+    prompt: What do you want to name the application?
+    validate: !expr "regex('^[a-zA-Z][\\\\w-]{1,29}[\\\\w]$', AppName)"
+
+  - name: UseSampleApplication
+    type: Confirm
+    prompt: Do you want to deploy a sample application with its database?
+    default: true
+    description: Deploy the sample application from https://github.com/xebialabs/e-commerce-monolith with a MySQL server database
+
+  - name: MySqlMasterUsername
+    value: mysqladminun
+
+  - name: MySqlMasterPassword
+    type: SecretInput
+    prompt: What is the master password to use for MySQL server that will be provisioned?
+    promptIf: !expr "UseSampleApplication"
+    description: A complex password for MySQL server user. Needs minimum 8 character with at least 1 lowercase, 1 uppercase, 1 number and 1 special character
+    validate: !expr "regex('^(?=.*?[0-9])(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[-._!#^~@$%*]).{8,128}$', MySqlMasterPassword)"
+
+  - name: DockerImage
+    type: Input
+    prompt: What is the docker image path that you would like to use?
+    default: xebialabsunsupported/ecommerce-monolith
+    value: !expr "UseSampleApplication ? 'xebialabsunsupported/ecommerce-monolith' : ''"
+
+  - name: DockerImageTag
+    type: Input
+    prompt: What is the docker image tag to be used?
+    default: latest
+    value: !expr "UseSampleApplication ? 'latest' : ''"
+
+  includeAfter:
+  - blueprint: fragments/azure-resourcegroup-location
+
+  - blueprint: fragments/azure-credentials
+
+  - blueprint: xl-devops-platform
+    parameterOverrides:
+    - name: UseXLDeploy
+      value: true
+    - name: UseXLRelease
+      value: false
+    - name: XLVersion
+      value: "9.0"
+    - name: UseDockerProxy
+      value: false
+    - name: UseJenkins
+      value: false
+
+  files:
+  # XebiaLabs
+  - path: xebialabs.yaml
+  - path: README.md
+  - path: xebialabs/USAGE-app-service-docker-app.md.tmpl
+  - path: xebialabs/xld-app-service-docker-app-applications.yaml.tmpl
+  - path: xebialabs/xld-app-service-docker-app-infrastructure.yaml.tmpl
+  - path: xebialabs/xld-app-service-docker-app-environments.yaml.tmpl
+  # Terraform
+  - path: terraform-app-service-docker-app/.gitignore
+  - path: terraform-app-service-docker-app/main.tf.tmpl
+  - path: terraform-app-service-docker-app/outputs.tf
+  - path: terraform-app-service-docker-app/variables.tf.tmpl

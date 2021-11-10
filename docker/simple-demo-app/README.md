@@ -1,0 +1,69 @@
+# Simple API and web application on Docker
+
+## Introduction
+
+Use this blueprint to deploy a Docker application with front-end and back-end services to Docker running locally. The release template that the blueprint generates will deploy the application and optionally undeploy it.
+
+## Before you get started
+
+If you're new to XebiaLabs blueprints, check out:
+
+* [Get started with DevOps as Code](https://docs.xebialabs.com/xl-release/concept/get-started-with-devops-as-code.html)
+* [Get started with blueprints](https://docs.xebialabs.com/xl-release/concept/get-started-with-blueprints.html)
+
+## Prerequisites
+
+* XebiaLabs Release Orchestration and Deployment Automation up and running
+* A local Docker installation up and running
+
+
+## Usage
+
+To use this blueprint, run `xl blueprint` in an empty directory and select:
+
+```plain
+docker/simple-demo-app
+```
+
+## Tools and technologies
+
+This blueprint includes the following tools and technologies:
+
+* Target:
+  * [Docker](https://www.docker.com/)
+* Tools:
+  * [XebiaLabs Release Orchestration](https://xebialabs.com/products/xl-release/)
+  * [XebiaLabs Deployment Automation](https://xebialabs.com/products/xl-deploy/)
+* Application or framework:
+  * [Sample application API component](https://hub.docker.com/r/xebialabsunsupported/rest-o-rant-api)
+  * [Sample application web component](https://hub.docker.com/r/xebialabsunsupported/rest-o-rant-web)
+
+## Minimum required versions
+
+This blueprint version requires at least the following versions of the specified tools to work properly:
+
+* XL Release: Version 9.0
+* XL Deploy: Version 9.0
+* XL CLI: Version 9.0
+
+## Information required
+
+* The application name
+* The port where the application should be exposed
+* Docker images for a front-end and back-end service
+
+## Output
+
+* Release templates
+* Docker infrastructure
+* A docker-compose setup for XL Release, XL Deploy & Docker proxy
+
+## Tips and tricks
+
+* Before using this blueprint, ensure that you have a front-end and a back-end application service packaged in Docker containers.
+* The YAML that the blueprint generates includes optional steps to remove the application.
+
+## Labels
+
+* Docker
+

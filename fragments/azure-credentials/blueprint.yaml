@@ -1,0 +1,32 @@
+apiVersion: xl/v2
+kind: Blueprint
+
+metadata:
+  name: azure-credentials
+  description: Fragment to collect Azure credentials
+  author: XebiaLabs
+  version: 2.0
+  suppressXebiaLabsFolder: true
+  instructions: This blueprint has no instructions.
+
+spec:
+  parameters:
+  - name: PromptForClientSecret
+    value: true
+
+  - name: ClientID
+    type: Input
+    prompt: "What is the client id (appId) of an existing Service Principal in Azure?"
+
+  - name: ClientSecret
+    type: SecretInput
+    prompt: "What is the secret (password) for that client id?"
+    promptIf: !expr "PromptForClientSecret"
+
+  - name: SubscriptionID
+    type: Input
+    prompt: "What is your existing Azure subscription id?"
+
+  - name: TenantID
+    type: Input
+    prompt: "What is your existing Azure tenant id?"

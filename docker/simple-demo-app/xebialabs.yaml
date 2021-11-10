@@ -1,0 +1,9 @@
+apiVersion: xl/v1
+kind: Import
+metadata:
+  imports:
+  - xebialabs/xld-simple-demo-app-applications.yaml
+  - xebialabs/xld-simple-demo-app-infrastructure.yaml
+  - xebialabs/xld-simple-demo-app-environments.yaml
+  - xebialabs/xlr-simple-demo-app-pipeline-ci-cd.yaml
+  - xebialabs/xlr-simple-demo-app-pipeline-destroy.yaml

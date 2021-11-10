@@ -1,0 +1,49 @@
+apiVersion: xl/v2
+kind: Blueprint
+
+metadata:
+  name: CL-Azure-AKS-Basic
+  description: |
+    This blueprint provisions a very basic Azure AKS cluster. XL Deploy does the provisioning.
+  author: XebiaLabs
+  version: 2.0
+  instructions: Please read the generated file "xebialabs/USAGE-basic-aks-cluster.md" for further usage instructions.
+
+spec:
+  parameters:
+  - name: ClusterName
+    type: Input
+    prompt: What do you want to name the cluster?
+    validate: !expr "regex('^[a-zA-Z][\\\\w-]{1,29}[\\\\w]$', ClusterName)"
+
+  includeAfter:
+  - blueprint: fragments/azure-resourcegroup-location
+
+  - blueprint: fragments/azure-credentials
+
+  - blueprint: xl-devops-platform
+    parameterOverrides:
+    - name: UseXLDeploy
+      value: true
+    - name: UseXLRelease
+      value: false
+    - name: XLVersion
+      value: "9.0"
+    - name: UseDockerProxy
+      value: false
+    - name: UseJenkins
+      value: false
+
+  files:
+  # XebiaLabs
+  - path: xebialabs.yaml
+  - path: README.md
+  - path: xebialabs/USAGE-basic-aks-cluster.md.tmpl
+  - path: xebialabs/xld-basic-aks-cluster-applications.yaml.tmpl
+  - path: xebialabs/xld-basic-aks-cluster-infrastructure.yaml.tmpl
+  - path: xebialabs/xld-basic-aks-cluster-environments.yaml.tmpl
+  # Terraform
+  - path: terraform-basic-aks-cluster/.gitignore
+  - path: terraform-basic-aks-cluster/main.tf
+  - path: terraform-basic-aks-cluster/outputs.tf
+  - path: terraform-basic-aks-cluster/variables.tf

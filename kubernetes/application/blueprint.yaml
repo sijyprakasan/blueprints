@@ -1,0 +1,49 @@
+apiVersion: xl/v2
+kind: Blueprint
+
+metadata:
+  name: CL Define a Kubernetes application
+  description: |
+    This blueprint defines an application that can be deployed to Kubernetes
+  author: XebiaLabs
+  version: 2.0
+  instructions: Read xebialabs/USAGE-application.md to learn how to use this blueprint.
+
+spec:
+  parameters:
+  - name: AppName
+    type: Input
+    prompt: What do you want to name the application?
+    default: nginx
+    validate: !expr "regex('^[a-zA-Z][\\\\w-]{1,29}[\\\\w]$', AppName)"
+
+  - name: DockerImage
+    type: Input
+    prompt: What is the docker image path that you would like to use?
+
+  - name: DockerImageTag
+    type: Input
+    prompt: What is the docker image tag to be used?
+    default: latest
+
+  - name: KubernetesResourcesFile
+    type: Input
+    prompt: "What is the path of the Kubernetes YAML file that you want to deploy?"
+    default: '../kubernetes-application/deployment.yaml'
+
+  - name: Namespace
+    type: Input
+    prompt: "Name of namespace to deploy to:"
+    default: default
+
+  - name: NamespaceTag
+    value: kubernetes-namespace
+
+  files:
+  # XebiaLabs
+  - path: xebialabs.yaml
+  - path: README.md
+  - path: xebialabs/USAGE-application.md.tmpl
+  - path: xebialabs/xld-application-applications.yaml.tmpl
+  # Kubernetes
+  - path: kubernetes-application/deployment.yaml.tmpl

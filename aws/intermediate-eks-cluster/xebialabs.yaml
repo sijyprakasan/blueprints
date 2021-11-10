@@ -1,0 +1,9 @@
+apiVersion: xl/v1
+kind: Import
+metadata:
+  imports:
+  - xebialabs/xld-intermediate-eks-cluster-applications.yaml
+  - xebialabs/xld-intermediate-eks-cluster-infrastructure.yaml
+  - xebialabs/xld-intermediate-eks-cluster-environments.yaml
+  - xebialabs/xlr-intermediate-eks-cluster-pipeline-ci-cd.yaml
+  - xebialabs/xlr-intermediate-eks-cluster-pipeline-destroy.yaml

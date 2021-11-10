@@ -1,0 +1,49 @@
+apiVersion: xl/v2
+kind: Blueprint
+
+metadata:
+  name: CL Deploy a single container to Docker
+  description: |
+    This blueprint defines an application for a single Docker container
+  author: XebiaLabs
+  version: 2.0
+  instructions: Read xebialabs/USAGE-application.md to learn how to use this blueprint.
+
+spec:
+  parameters:
+  - name: DockerImageRepository
+    type: Input
+    prompt: What is the Docker image repository?
+    default: nginx
+
+  - name: DockerImageTag
+    type: Input
+    prompt: What is the Docker image tag?
+    default: latest
+
+  - name: ExposePort
+    type: Confirm
+    prompt: Should the Docker container expose a port?
+    default: true
+
+  - name: ContainerPort
+    type: Input
+    prompt: At what port should the application be exposed in the container?
+    promptIf: ExposePort
+    default: 80
+
+  - name: HostPort
+    type: Input
+    prompt: At what port should the container port be mapped in the host?
+    promptIf: ExposePort
+    default: 8080
+
+  - name: Standalone
+    value: true
+
+  files:
+  # XebiaLabs
+  - path: xebialabs.yaml
+  - path: README.md
+  - path: xebialabs/USAGE-application.md.tmpl
+  - path: xebialabs/xld-application-applications.yaml.tmpl

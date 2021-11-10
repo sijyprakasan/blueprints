@@ -1,0 +1,88 @@
+apiVersion: xl/v2
+kind: Blueprint
+
+metadata:
+  name: CL-Docker compose
+  description: Creates the necessary `docker-compose.yaml` needed to run your specific setup including XL Products for development and testing purpose.
+  author: XebiaLabs
+  version: 2.0
+  suppressXebiaLabsFolder: true
+  instructions: |
+    Please read the generated file "xebialabs/USAGE-docker-compose.md" for further usage instructions.
+    This setup is not suitable for production use. It is intended for development and testing purposes only.
+
+spec:
+  parameters:
+  - name: GenerateDockerComposeSetup
+    type: Confirm
+    prompt: "Do you want to generate a docker-compose setup with the required tools to run this blueprint?"
+    default: false
+
+  - name: UseXLDeploy
+    type: Confirm
+    prompt: Do you want to install XL Deploy?
+    promptIf: !expr "GenerateDockerComposeSetup"
+    default: true
+
+  - name: XLDeployPort
+    type: Input
+    prompt: "Host port for XL Deploy:"
+    promptIf: !expr "GenerateDockerComposeSetup && UseXLDeploy"
+    default: 4516
+
+  - name: UseXLRelease
+    type: Confirm
+    prompt: Do you want to install XL Release?
+    promptIf: !expr "GenerateDockerComposeSetup"
+    default: true
+
+  - name: XLReleasePort
+    type: Input
+    prompt: "Host port for XL Release:"
+    promptIf: !expr "GenerateDockerComposeSetup && UseXLRelease"
+    default: 5516
+
+  - name: XLVersion
+    type: Select
+    prompt: "Select the version of XL you want to use:"
+    promptIf: !expr "GenerateDockerComposeSetup && (UseXLDeploy == true || UseXLRelease == true)"
+    default: "9.0"
+    options:
+    - "9.0"
+    - "8.6.1"
+
+  - name: UseJenkins
+    type: Confirm
+    prompt: Do you want to be able to run CI/CD integration using a pre-configured Jenkins instance?
+    promptIf: !expr "GenerateDockerComposeSetup"
+    default: false
+
+  - name: JenkinsPort
+    type: Input
+    prompt: "Host port for Jenkins:"
+    promptIf: !expr "GenerateDockerComposeSetup && UseJenkins"
+    default: 8080
+
+  - name: JenkinsBranch
+    value: master
+
+  - name: UseDockerProxy
+    type: Confirm
+    prompt: Do you want to be able to deploy to your local Docker instance using Docker proxy?
+    promptIf: !expr "GenerateDockerComposeSetup"
+    description: This is meant for development purposes and hence is not a best practice that should be used in production
+    default: false
+
+  files:
+  # XebiaLabs
+  - path: xebialabs/USAGE-docker-compose.md.tmpl
+    writeIf: !expr "GenerateDockerComposeSetup"
+  - path: xebialabs/config.yaml.tmpl
+    writeIf: !expr "GenerateDockerComposeSetup"
+  # Docker
+  - path: docker/docker-compose.yml.tmpl
+    writeIf: !expr "GenerateDockerComposeSetup"
+  - path: docker/data/configure-xl-devops-platform.yaml.tmpl
+    writeIf: !expr "GenerateDockerComposeSetup && (UseXLRelease || UseJenkins)"
+  - path: docker/jenkins/jenkins.yaml.tmpl
+    writeIf: !expr "GenerateDockerComposeSetup && UseJenkins"

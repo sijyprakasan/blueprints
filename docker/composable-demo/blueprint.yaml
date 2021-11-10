@@ -1,0 +1,42 @@
+apiVersion: xl/v2
+kind: Blueprint
+
+metadata:
+  name: Docker Sample
+  description: |
+    This blueprint deploys a simple application in Docker container into your local Docker setup.
+    XL Deploy does the deployment, while XL Release orchestrates everything.
+  author: XebiaLabs
+  version: 2.0
+  instructions: Please read the generated file "xebialabs/USAGE-composable-demo.md" for further usage instructions.
+
+spec:
+  includeBefore:
+  - blueprint: docker/environment
+    parameterOverrides:
+    - name: Standalone
+      value: false
+
+  - blueprint: docker/application
+
+  includeAfter:
+  - blueprint: xl-devops-platform
+    parameterOverrides:
+    - name: GenerateDockerComposeSetup
+      value: true
+    - name: UseXLDeploy
+      value: true
+    - name: UseXLRelease
+      value: false
+    - name: XLVersion
+      value: "9.0"
+    - name: UseDockerProxy
+      value: true
+    - name: UseJenkins
+      value: false
+
+  files:
+  # XebiaLabs
+  - path: xebialabs.yaml
+  - path: README.md
+  - path: xebialabs/USAGE-composable-demo.md

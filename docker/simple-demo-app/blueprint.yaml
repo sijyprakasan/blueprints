@@ -1,0 +1,63 @@
+apiVersion: xl/v2
+kind: Blueprint
+
+metadata:
+  name: Docker Demo Application
+  description: |
+    This blueprint deploys a simple application in 2 Docker containers into your local Docker setup.
+    XL Deploy does the deployment, while XL Release orchestrates everything.
+  author: XebiaLabs
+  version: 2.0
+  instructions: Please read the generated file "xebialabs/USAGE-simple-demo-app.md" for further usage instructions.
+
+spec:
+  parameters:
+  - name: AppName
+    type: Input
+    prompt: What do you want to name the application?
+    validate: !expr "regex('^[a-zA-Z][\\\\w-]{1,29}[\\\\w]$', AppName)"
+
+  - name: ContainerPort
+    type: Input
+    prompt: At what port should the application be exposed in the container?
+    default: 80
+
+  - name: HostPort
+    type: Input
+    prompt: At what port should the container port be mapped in the host?
+    default: 8181
+
+  - name: BackendDockerImage
+    type: Input
+    prompt: What is the Docker Image (repo and path) for the Backend service?
+    default: xebialabsunsupported/rest-o-rant-api
+
+  - name: FrontendDockerImage
+    type: Input
+    prompt: What is the Docker Image (repo and path) for the Frontend service?
+    default: xebialabsunsupported/rest-o-rant-web
+
+  includeAfter:
+  - blueprint: xl-devops-platform
+    parameterOverrides:
+    - name: UseXLDeploy
+      value: true
+    - name: UseXLRelease
+      value: true
+    - name: XLVersion
+      value: "9.0"
+    - name: UseDockerProxy
+      value: true
+    - name: UseJenkins
+      value: false
+
+  files:
+  # XebiaLabs
+  - path: xebialabs.yaml
+  - path: README.md
+  - path: xebialabs/USAGE-simple-demo-app.md.tmpl
+  - path: xebialabs/xld-simple-demo-app-applications.yaml.tmpl
+  - path: xebialabs/xld-simple-demo-app-infrastructure.yaml.tmpl
+  - path: xebialabs/xld-simple-demo-app-environments.yaml.tmpl
+  - path: xebialabs/xlr-simple-demo-app-pipeline-ci-cd.yaml.tmpl
+  - path: xebialabs/xlr-simple-demo-app-pipeline-destroy.yaml.tmpl

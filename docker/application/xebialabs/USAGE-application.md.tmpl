@@ -1,0 +1,45 @@
+{{- $app := regexReplaceAll "^.*?/" .DockerImageRepository ""}}
+# Docker Single Container Application Usage
+
+{{if .Standalone}}
+## Notes
+
+* This blueprint creates a deployment package with a single `docker.ContainerSpec` for the container that you specified.
+
+## Prerequisites
+
+* Make sure the companion `docker/environment` blueprint that creates an environment to which this package can be deployed has been instantiated.
+
+## Deploy the blueprint to the XL Platform
+
+To deploy this blueprint to the XebiaLabs DevOps Platform, open up a terminal in the folder where you generated the configuration. Then run:
+
+```plain
+xl apply -f xebialabs.yaml
+```
+{{else}}
+This blueprint creates a deployment package with a single `docker.ContainerSpec` for the container that was also deployed.
+{{end}}
+
+## Deploy to Docker
+
+Go to XL Deploy and look for the `{{$app}}` Application.
+
+### Provision the container
+
+1. Select `{{$app}}/{{.DockerImageTag}}`, click on the ellipsis and select 'Deploy'.
+    1. Select `Environments/Docker` and click 'Continue'.
+    2. Verify that there are no error messages, then click 'Deploy'.
+
+{{if .ExposePort}}
+Navigate to http://localhost:{{.HostPort}} to see the deployed container.
+{{end}}
+
+## Undeploy from Docker
+
+Go to XL Deploy and look for the `{{$app}}` folder under `Environments`.
+
+### Deprovision the container
+
+1. Select `Environments/Docker/nginx (latest)`, click on the ellipsis and select 'Undeploy'.
+    1. Click 'Undeploy' at the top right of the screen.

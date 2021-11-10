@@ -1,0 +1,125 @@
+apiVersion: xl/v2
+kind: Blueprint
+
+metadata:
+  name: Kubernetes-Multicloud-Pipeline
+  description: |
+    An end-to-end blueprint that composes infrastructure (EKS / AKS / GKE), application (Kubernetes) and a pipeline.
+  author: XebiaLabs
+  version: 2.0
+  instructions: Please read the generated file "xebialabs/USAGE-multicloud-pipeline.md" for further usage instructions.
+
+spec:
+  parameters:
+  - name: Provider
+    type: Select
+    prompt: Which Kubernetes service provider do you want to use
+    options:
+    - label: Amazon
+      value: EKS
+    - label: Google Cloud
+      value: GKE
+    - label: Azure
+      value: AKS
+    - existing cluster
+
+  - name: ClusterName
+    type: Input
+    prompt: What do you want to name the cluster?
+    validate: !expr "regex('^[a-zA-Z][\\\\w-]{1,29}[\\\\w]$', ClusterName)"
+
+  - name: Namespace
+    value: default
+
+  - name: NamespaceTag
+    value: kubernetes-namespace
+
+  - name: XLDUrlForXLR
+    type: Input
+    prompt: What is the XL Deploy URL used by XL Release? (This is only used in the XL Release template)
+    default: http://xl-deploy:4516
+
+  includeAfter:
+  - blueprint: kubernetes/environment
+    includeIf: !expr "Provider == 'existing cluster'"
+    fileOverrides:
+    - path: xebialabs.yaml
+      writeIf: !expr "false"
+    - path: xebialabs/USAGE-environment.md.tmpl
+      writeIf: !expr "false"
+    parameterOverrides:
+    - name: KubernetesClusterName
+      value: !expr "ClusterName"
+    - name: KubernetesNamespace
+      value: !expr "Namespace"
+
+  - blueprint: aws/basic-eks-cluster
+    includeIf: !expr "Provider == 'EKS'"
+    fileOverrides:
+    - path: xebialabs.yaml
+      writeIf: !expr "false"
+    parameterOverrides:
+    - name: ClusterName
+      value: !expr "ClusterName"
+
+  - blueprint: azure/basic-aks-cluster
+    includeIf: !expr "Provider == 'AKS'"
+    fileOverrides:
+    - path: xebialabs.yaml
+      writeIf: !expr "false"
+    parameterOverrides:
+    - name: ClusterName
+      value: !expr "ClusterName"
+
+  - blueprint: gcp/basic-gke-cluster
+    includeIf: !expr "Provider == 'GKE'"
+    fileOverrides:
+    - path: xebialabs.yaml
+      writeIf: !expr "false"
+    parameterOverrides:
+    - name: ClusterName
+      value: !expr "ClusterName"
+
+  - blueprint: kubernetes/application
+    fileOverrides:
+    - path: xebialabs.yaml
+      writeIf: !expr "false"
+    - path: xebialabs/USAGE-application.md.tmpl
+      writeIf: !expr "false"
+    parameterOverrides:
+    - name: NamespaceTag
+      value: !expr "NamespaceTag"
+    - name: Namespace
+      value: !expr "Namespace"
+
+  - blueprint: xl-devops-platform
+    fileOverrides:
+    - path: xebialabs.yaml
+      writeIf: !expr "false"
+    parameterOverrides:
+    - name: UseXLDeploy
+      value: true
+    - name: UseXLRelease
+      value: true
+    - name: XLVersion
+      value: "9.0"
+    - name: UseDockerProxy
+      value: false
+    - name: UseJenkins
+      value: false
+
+  files:
+  # XebiaLabs
+  - path: xebialabs.yaml.tmpl
+  - path: README.md
+  - path: xebialabs/USAGE-multicloud-pipeline.md.tmpl
+  - path: xebialabs/xlr-multicloud-pipeline-ci-cd.yaml.tmpl
+    writeIf: !expr "Provider != 'EKS'"
+  - path: xebialabs/xlr-multicloud-pipeline-destroy.yaml.tmpl
+    writeIf: !expr "Provider != 'EKS'"
+  - path: xebialabs/xlr-multicloud-pipeline-aws-ci-cd.yaml.tmpl
+    writeIf: !expr "Provider == 'EKS'"
+    renameTo: xebialabs/xlr-multicloud-pipeline-ci-cd.yaml.tmpl
+  - path: xebialabs/xlr-multicloud-pipeline-aws-destroy.yaml.tmpl
+    writeIf: !expr "Provider == 'EKS'"
+    renameTo: xebialabs/xlr-multicloud-pipeline-destroy.yaml.tmpl

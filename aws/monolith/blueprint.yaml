@@ -1,0 +1,79 @@
+apiVersion: xl/v2
+kind: Blueprint
+
+metadata:
+  name: CL-AWS-Monolith-ECS-Fargate
+  description: |
+    This blueprint deploys a monolithic application generated with JHipster, to AWS ECS with the Fargate launch type.
+    XL Deploy does the provisioning and deployment, while XL Release orchestrates everything.
+  author: XebiaLabs
+  version: 2.0
+  instructions: Please read the generated file "xebialabs/USAGE-monolith.md" for further usage instructions.
+
+spec:
+  parameters:
+  - name: UseAWSCredentialsFromSystem
+    type: Confirm
+    prompt: Do you want to use AWS credentials from ~/.aws/credentials file?
+    promptIf: !expr "awsCredentials('IsAvailable')"
+
+  - name: AWSAccessKey
+    type: SecretInput
+    prompt: What is the AWS Access Key ID?
+    promptIf: !expr "!UseAWSCredentialsFromSystem"
+    default: !expr "awsCredentials('AccessKeyID')"
+
+  - name: AWSAccessSecret
+    type: SecretInput
+    prompt: What is the AWS Secret Access Key?
+    promptIf: !expr "!UseAWSCredentialsFromSystem"
+    default: !expr "awsCredentials('SecretAccessKey')"
+
+  - name: AWSRegion
+    type: Select
+    prompt: "Select the AWS region:"
+    saveInXlvals: true
+    default: !expr "awsRegions('ecs', 0)"
+    options:
+    - !expr "awsRegions('ecs')"
+
+  - name: AppName
+    type: Input
+    prompt:  What do you want to name the application? (16 characters max)
+    description: Application name will be used to generate cloud resource names
+    validate: !expr "regex('^[a-zA-Z][\\\\w-]{1,24}[\\\\w]$', AppName)"
+
+  - name: PublicPort
+    description: The port that the application shoule be exposed
+    value: 80
+
+  - name: MySQLMasterPassword
+    type: SecretInput
+    prompt: What should be the password for MySQL? (minimum 8 characters)
+    validate: !expr "regex('^[A-Za-z0-9_#-]{8,}$', MySQLMasterPassword)"
+
+  includeAfter:
+  - blueprint: xl-devops-platform
+    parameterOverrides:
+    - name: UseXLDeploy
+      value: true
+    - name: UseXLRelease
+      value: true
+    - name: XLVersion
+      value: "9.0"
+    - name: UseDockerProxy
+      value: false
+    - name: UseJenkins
+      value: false
+
+  files:
+  # XebiaLabs
+  - path: xebialabs.yaml
+  - path: README.md
+  - path: xebialabs/USAGE-monolith.md.tmpl
+  - path: xebialabs/xld-monolith-applications.yaml.tmpl
+  - path: xebialabs/xld-monolith-service-applications.yaml.tmpl
+  - path: xebialabs/xld-monolith-infrastructure.yaml.tmpl
+  - path: xebialabs/xld-monolith-environments.yaml.tmpl
+  - path: xebialabs/xlr-monolith-pipeline-ci-cd.yaml.tmpl
+  - path: xebialabs/xlr-monolith-pipeline-destroy.yaml.tmpl

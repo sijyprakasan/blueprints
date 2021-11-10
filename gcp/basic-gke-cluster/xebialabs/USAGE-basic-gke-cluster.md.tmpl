@@ -1,0 +1,49 @@
+{{- $clusterName := .ClusterName | kebabcase}}
+# Basic Google Kubernetes Engine Cluster Usage
+
+## Prerequisites
+
+### Google-specific steps
+
+Follow the instructions in the [gcp/README.md](https://github.com/xebialabs/blueprints/blob/master/gcp/README.md) on how to:
+
+* Download and install the Google SDK
+* Log in to gcloud
+* Configure permissions for running this blueprint
+
+> **Note:** Make sure the `account.json` file you downloaded is placed inside the `terraform-basic-gke-cluster` folder that is created by the blueprint
+
+## Start the XL Platform
+{{if eq .GenerateDockerComposeSetup true}}
+Follow the instructions in `xebialabs/USAGE-docker-compose.md`.
+{{else}}
+Make sure your existing XL Platform is up and running and accessible.
+{{end}}
+
+## Deploy the blueprint to the XL Platform
+
+To deploy this blueprint to the XebiaLabs DevOps Platform, open up a terminal in the folder where you generated the configuration. Then run:
+
+```plain
+xl apply -f xebialabs.yaml
+```
+
+## Deploy to GCP
+
+Go to XL Deploy and look for the `{{$clusterName}}` folder under `Applications`.
+
+### Provision the Terraform template
+
+1. Select `{{$clusterName}}/{{$clusterName}}/1.0.0`, click on the ellipsis and select 'Deploy'.
+    1. Select `Environments/{{$clusterName}}/terraform` and click 'Continue'.
+    2. Verify that there are no error messages, then click 'Deploy'.
+
+## Undeploy from GCP
+
+Go to XL Deploy and look for the `{{$clusterName}}` folder under `Environments`.
+
+### Deprovision the Terraform template
+
+1. Select `Environments/{{$clusterName}}/terraform/{{$clusterName}} (1.0.0)`, click on the ellipsis and select 'Undeploy'.
+    1. Click 'Undeploy' at the top right of the screen.
+

@@ -1,0 +1,104 @@
+apiVersion: xl/v2
+kind: Blueprint
+
+metadata:
+  name: GKE-Cluster
+  description: |
+    This blueprint provisions a GCP GKE Cluster using Terraform and XL Deploy.
+  author: XebiaLabs
+  version: 2.0
+  instructions: Read xebialabs/USAGE-basic-gke-cluster.md to learn how to use this blueprint.
+
+spec:
+  parameters:
+  - name: ClusterName
+    type: Input
+    prompt: What is the name of the cluster?
+
+  - name: GCPProjectID
+    type: Input
+    prompt: What is the GCP project ID?
+
+  - name: K8SMasterUser
+    type: Input
+    prompt: What is the username for Kubernetes cluster?
+    default: admin
+
+  - name: K8SMasterPassword
+    type: SecretInput
+    prompt: What is the password for Kubernetes cluster? (minimum 16 characters)
+    validate: !expr "regex('^(\\\\S){16,}$', K8SMasterPassword)"
+
+  - name: GKENumNodes
+    type: Input
+    prompt: What is the number of nodes in each GKE cluster zone?
+    default: 2
+
+  - name: GKENodeMachineType
+    type: Select
+    prompt: What is the machine type of the GKE nodes?
+    options:
+    - n1-standard-1
+    - n1-standard-2
+    - n1-standard-4
+    - n1-standard-8
+    - n1-standard-16
+    - n1-standard-32
+    - n1-standard-64
+    - n1-standard-96
+    - n1-highmem-2
+    - n1-highmem-4
+    - n1-highmem-8
+    - n1-highmem-16
+    - n1-highmem-32
+    - n1-highmem-64
+    - n1-highmem-96
+    - n1-highcpu-2
+    - n1-highcpu-4
+    - n1-highcpu-8
+    - n1-highcpu-16
+    - n1-highcpu-32
+    - n1-highcpu-64
+    - n1-highcpu-96
+    - f1-micro
+    - g1-small
+    - n1-ultramem-40
+    - n1-ultramem-80
+    - n1-ultramem-160
+    - n1-megamem-96
+
+  includeAfter:
+  - blueprint: fragments/gcp-region
+
+  - blueprint: xl-devops-platform
+    parameterOverrides:
+    - name: UseXLDeploy
+      value: true
+    - name: UseXLRelease
+      value: false
+    - name: XLVersion
+      value: "9.0"
+    - name: UseDockerProxy
+      value: false
+    - name: UseJenkins
+      value: false
+
+  files:
+  # XebiaLabs
+  - path: xebialabs.yaml
+  - path: README.md
+  - path: xebialabs/USAGE-basic-gke-cluster.md.tmpl
+  - path: xebialabs/xld-basic-gke-cluster-applications.yaml.tmpl
+  - path: xebialabs/xld-basic-gke-cluster-infrastructure.yaml.tmpl
+  - path: xebialabs/xld-basic-gke-cluster-environments.yaml.tmpl
+  # Terraform
+  - path: terraform-basic-gke-cluster/gke/main.tf
+  - path: terraform-basic-gke-cluster/gke/outputs.tf
+  - path: terraform-basic-gke-cluster/gke/variables.tf
+  - path: terraform-basic-gke-cluster/vpc/main.tf
+  - path: terraform-basic-gke-cluster/vpc/outputs.tf
+  - path: terraform-basic-gke-cluster/vpc/variables.tf
+  - path: terraform-basic-gke-cluster/.gitignore
+  - path: terraform-basic-gke-cluster/main.tf
+  - path: terraform-basic-gke-cluster/outputs.tf
+  - path: terraform-basic-gke-cluster/variables.tf

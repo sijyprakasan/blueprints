@@ -1,0 +1,56 @@
+{{- $clusterName := .ClusterName | kebabcase}}
+# Basic AKS Cluster Usage
+
+## Notes
+
+* This example does not create a namespace, but uses the `default` namespace
+* This example creates an admin user called `adminuser` and generates that user's private key:
+  * You can find the key `admin_private_key` under the XL Deploy dictionary `Environments` > `{{$clusterName}}` > `{{$clusterName}}-dictionary`
+* You will also find the cluster API host url and access token under the same dictionary
+
+## Start the XL Platform
+{{if eq .GenerateDockerComposeSetup true}}
+Follow the instructions in `xebialabs/USAGE-docker-compose.md`.
+{{else}}
+Make sure your existing XL Platform is up and running and accessible.
+{{end}}
+
+## Deploy the blueprint to the XL Platform
+
+To deploy this blueprint to the XebiaLabs DevOps Platform, open up a terminal in the folder where you generated the configuration. Then run:
+
+```plain
+xl apply -f xebialabs.yaml
+```
+
+## Deploy to Azure
+
+Go to XL Deploy and look for the `{{$clusterName}}` folder under `Applications`.
+
+### Provision the cluster
+
+1. Select `{{$clusterName}}/{{$clusterName}}/1.0.0`, click on the ellipsis and select 'Deploy'.
+    1. Select `Environments/{{$clusterName}}/terraform` and click 'Continue'.
+    2. Verify that there are no error messages, then click 'Deploy'.
+
+After the deployment process is complete, an AKS cluster will have been provisioned on Azure and a configured `K8s.master` environment will have been registered in XL Deploy.
+
+In order to deploy to the K8s cluster, you can execute any K8s blueprints to generate configurations, apply those and deploy the application to your new cluster using XL Deploy.
+
+## Undeploy from Azure
+
+Go to XL Deploy and look for the `{{$clusterName}}` folder under `Environments`.
+
+### Deprovision the cluster
+
+1. Select `Environments/{{$clusterName}}/terraform/{{$clusterName}} (1.0.0)`, click on the ellipsis and select 'Undeploy'.
+    1. Click 'Undeploy' at the top right of the screen.
+
+## Extras
+
+* To find the Kubernetes Dashboard in the Azure Portal:
+  * Find and click on the `{{.ResourceGroup}}` Resource Group
+  * Find and click on the `{{$clusterName}}` Kubernetes service
+  * Click 'View Kubernetes Dashboard'
+  * Follow the instructions
+

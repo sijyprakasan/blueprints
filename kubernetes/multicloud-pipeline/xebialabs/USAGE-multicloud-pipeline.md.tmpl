@@ -1,0 +1,69 @@
+{{$clusterName := .ClusterName | kebabcase}}
+# Basic composability demo with EKS/AKS/GKE cluster, Kubernetes application and an XLR pipeline Usage
+
+## Prerequisites
+
+{{if ne .DockerImage "nginx"}}
+* Edit `kubernetes-application/deployment.yaml` to suit the `{{.DockerImage}}` image you chose to deploy.
+{{end}}
+{{if eq .Provider "EKS"}}
+* Follow any special instructions in `xebialabs/USAGE-basic-eks-cluster.md`.
+{{else if eq .Provider "GKE"}}
+* Follow any special instructions in `xebialabs/USAGE-basic-gke-cluster.md`.
+{{else if eq .Provider "AKS"}}
+* Follow any special instructions in `xebialabs/USAGE-basic-aks-cluster.md`.
+{{end}}
+
+## Start the XL Platform
+{{if eq .GenerateDockerComposeSetup true}}
+Follow the instructions in `xebialabs/USAGE-docker-compose.md`.
+{{else}}
+Make sure your existing XL Platform is up and running and accessible.
+{{end}}
+
+## Deploy the blueprint to the XL Platform
+
+To deploy this blueprint to the XebiaLabs DevOps Platform, open up a terminal in the folder where you generated the configuration. Then run:
+
+```plain
+xl apply -f xebialabs.yaml
+```
+
+{{if eq .Provider "EKS"}}
+## Deploy to AWS
+{{else if eq .Provider "GKE"}}
+## Deploy to GCP
+{{else if eq .Provider "AKS"}}
+## Deploy to Azure
+{{else}}
+## Deploy to existing cluster
+{{end}}
+
+Go to XL Release and click on `{{$clusterName}}` under the 'Design' tab.
+
+### Provision the CI/CD pipeline
+
+1. Click 'New Release' under `{{$clusterName}}-ci-cd`.
+    1. Give the Release a name.
+    2. Click 'Create'.
+    3. Click 'Start Release'.
+
+{{if eq .Provider "EKS"}}
+## Undeploy from AWS
+{{else if eq .Provider "GKE"}}
+## Undeploy from GCP
+{{else if eq .Provider "AKS"}}
+## Undeploy from Azure
+{{else}}
+## Undeploy from existing cluster
+{{end}}
+
+Go to XL Release and click on `{{$clusterName}}` under the 'Design' tab.
+
+### Deprovision the CI/CD pipeline
+
+1. Click 'New Release' under `{{$clusterName}}-destroy`.
+    1. Give the Release a name.
+    2. Click 'Create'.
+    3. Click 'Start Release'.
+

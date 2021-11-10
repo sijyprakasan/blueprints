@@ -1,0 +1,51 @@
+apiVersion: xl/v2
+kind: Blueprint
+
+metadata:
+  name: Create infrastructure and environment for Kubernetes
+  description: |
+    This blueprint defines an environment for a Kubernetes cluster based on the information in your ~/.kube/config file
+  author: XebiaLabs
+  version: 2.0
+  instructions: Read xebialabs/USAGE-environment.md to learn how to use this blueprint.
+
+spec:
+  parameters:
+  - name: KubernetesClusterName
+    type: Input
+    prompt: "What is the name of the Kubernetes cluster?"
+    value: !expr "k8sConfig('ContextCluster')"
+
+  - name: KubernetesURL
+    type: Input
+    prompt: "What is the URL of the Kubernetes cluster?"
+    value: !expr "k8sConfig('ClusterServer')"
+
+  - name: KubernetesSkipTLSVerify
+    type: Confirm
+    prompt: "Does the Kubernetes cluster have a self-signed certificate?"
+    value: !expr "k8sConfig('ClusterInsecureSkipTLSVerify')"
+
+  - name: KubernetesClientCert
+    type: SecretEditor
+    prompt: "Please enter the client certificate to use to connect to the Kubernetes cluster: "
+    value: !expr "k8sConfig('UserClientCertificateData')"
+
+  - name: KubernetesClientPrivateKey
+    type: SecretEditor
+    prompt: "Please enter the client private key to use to connect to the Kubernetes cluster: "
+    value: !expr "k8sConfig('UserClientKeyData')"
+
+  - name: KubernetesNamespace
+    type: Input
+    prompt: "Which namespace in the Kubernetes cluster should be used?"
+    value: !expr "k8sConfig('ContextNamespace')"
+    default: default
+
+  files:
+  # XebiaLabs
+  - path: xebialabs.yaml
+  - path: README.md
+  - path: xebialabs/USAGE-environment.md
+  - path: xebialabs/xld-environment-infrastructure.yaml.tmpl
+  - path: xebialabs/xld-environment-environments.yaml.tmpl

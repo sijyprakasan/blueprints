@@ -1,0 +1,55 @@
+{{- $app := .AppName | kebabcase}}
+## Intermediate Amazon EKS Cluster Usage
+
+## Start the XL Platform
+{{if eq .GenerateDockerComposeSetup true}}
+Follow the instructions in `xebialabs/USAGE-docker-compose.md`.
+{{else}}
+Make sure your existing XL Platform is up and running and accessible.
+{{end}}
+
+## Deploy the blueprint to the XL Platform
+
+To deploy this blueprint to the XebiaLabs DevOps Platform, open up a terminal in the folder where you generated the configuration. Then run:
+
+```plain
+xl apply -f xebialabs.yaml
+```
+
+## Deploy to AWS
+
+Go to XL Release and click on `{{$app}}` under the 'Design' tab.
+
+### Provision the CI/CD pipeline
+
+1. Click 'New Release' under `{{$app}}-ci-cd`.
+    1. Give the Release a name.
+    2. Click 'Create'.
+    3. Click 'Start Release'.
+
+## Undeploy from AWS
+
+Go to XL Release and click on `{{$app}}` under the 'Design' tab.
+
+### Deprovision the CI/CD pipeline
+
+1. Click 'New Release' under `{{$app}}-destroy`.
+    1. Give the Release a name.
+    2. Click 'Create'.
+    3. Click 'Start Release'.
+
+{{- if .ProvisionEFS}}
+## Using Amazon Elastic File System
+
+This blueprint provisions an [Amazon Elastic File System](https://aws.amazon.com/efs/) that can be used for your Kubernetes applications.
+
+You would need to use an EFS provisioner and storage class definitions when deploying to your Kubernetes cluster. [Here](https://medium.com/faun/aws-eks-volumes-architecture-in-a-statefull-app-in-multiple-azs-6ca1b05f80eb) is a blog article demonstrating the concept.
+
+You can get the EFS ID from the XL Release pipeline once the provisioning is complete.
+{{- end}}
+
+## Extras
+
+* Follow [these instructions](https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html) to install `kubectl`.
+* Follow [Create a `kubeconfig` for Amazon EKS](https://docs.aws.amazon.com/eks/latest/userguide/create-kubeconfig.html) to use `kubectl` on your new cluster.
+* Follow [Deploy the Kubernetes Web UI (Dashboard)](https://docs.aws.amazon.com/eks/latest/userguide/dashboard-tutorial.html) to install the dashboard.

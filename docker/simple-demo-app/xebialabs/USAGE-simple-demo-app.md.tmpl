@@ -1,0 +1,44 @@
+{{$app := .AppName | kebabcase}}
+# Simple API and web application on Docker Usage
+
+## Notes
+
+* This blueprint deploys a simple application in 2 Docker containers into your local Docker setup.
+
+## Start the XL Platform
+{{if eq .GenerateDockerComposeSetup true}}
+Follow the instructions in `xebialabs/USAGE-docker-compose.md`.
+{{else}}
+Make sure your existing XL Platform is up and running and accessible.
+{{end}}
+
+## Deploy the blueprint to the XL Platform
+
+To deploy this blueprint to the XebiaLabs DevOps Platform, open up a terminal in the folder where you generated the configuration. Then run:
+
+```plain
+xl apply -f xebialabs.yaml
+```
+
+## Deploy to Docker
+
+Go to XL Release and click on `{{$app}}` under the 'Design' tab.
+
+### Provision the CI/CD pipeline
+
+1. Click 'New Release' under `{{$app}}-ci-cd`.
+    1. Give the Release a name.
+    2. Click 'Create'.
+    3. Click 'Start Release'.
+
+## Undeploy from AWS
+
+Go to XL Release and click on `{{$app}}` under the 'Design' tab.
+
+### Deprovision the CI/CD pipeline
+
+1. Click 'New Release' under `{{$app}}-destroy`.
+    1. Give the Release a name.
+    2. Click 'Create'.
+    3. Click 'Start Release'.
+
