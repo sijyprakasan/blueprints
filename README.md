@@ -2,7 +2,7 @@
 
 [![Travis Build Status][travis-image]][travis-url-main]
 
-Blueprint definitions for xl-cli. These files will be synced to [https://dist.xebialabs.com/public/blueprints/](https://dist.xebialabs.com/public/blueprints/) and can be used as xl-cli blueprint repository (set by default).
+Blueprint definitions for xl-cli. This can be used as xl-cli blueprint repository (set by default).
 
 ## Adding new blueprint
 
